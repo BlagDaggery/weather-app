@@ -13,6 +13,7 @@ section {
 .hi-low {
   display: inline;
   font-size: .75em;
+  padding: 10px 25px;
 }
 
 #temp {
