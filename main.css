@@ -4,10 +4,18 @@ body {
   margin: 0;
   height: 100%;
   font-family: 'Cabin', sans-serif;
+  background: #2a2d34;
 }
 
 section {
   text-align: center;
+}
+
+#content {
+  background: #e3e3e3;
+  width: 400px;
+  min-height: 300px;
+  margin: auto;
 }
 
 .hi-low {
