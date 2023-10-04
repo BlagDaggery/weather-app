@@ -1,39 +1,78 @@
 import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  // const [count, setCount] = useState(0);
+  const [weatherData, setWeatherData] = useState({
+    city: 'Your City',
+    country: 'Your Country',
+    currentConditions: '',
+    currentTempCelsius: NaN,
+    lowTempCelsius: NaN,
+    highTempCelsius: NaN
+  });
 
-  let api: string = 'https://fcc-weather-api.glitch.me/api/current';
+  const [fahrenheitTemps, setfahrenheitTemps] = useState({
+    currentTempFahrenheit: convertToFahrenheit(weatherData.currentTempCelsius),
+    lowTempFahrenheit: convertToFahrenheit(weatherData.lowTempCelsius),
+    highTempFahrenheit: convertToFahrenheit(weatherData.highTempCelsius)
+  });
 
-  const [city, setCity] = useState('Your City');
+  const api: string = 'https://fcc-weather-api.glitch.me/api/current';
 
   function getWeatherData() {
     navigator.geolocation.getCurrentPosition(success, error);
   }
 
-  function success(positionData) {
-    let longitude = positionData.coords.longitude;
-    let latitude = positionData.coords.latitude;
-    let endpoint: string = `${api}?lat=${latitude}&lon=${longitude}`;
-
-    // do fetch/async + await here
-
+  function convertToFahrenheit(temperature: number) {
+    return temperature ? Math.round(temperature * 9 / 5 + 32) : NaN;
   }
 
-  function error(errorResponse) {
+  function success(positionData: GeolocationPosition) {
+    const longitude = positionData.coords.longitude;
+    const latitude = positionData.coords.latitude;
+    const endpoint: string = `${api}?lat=${latitude}&lon=${longitude}`;
+
+    async function fetchWeatherData() {
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      
+      setWeatherData({
+        city: data.name,
+        country: data.sys.country,
+        currentConditions: data.weather[0].main,
+        currentTempCelsius: Math.round(data.main.temp),
+        lowTempCelsius: Math.round(data.main.temp_min),
+        highTempCelsius: Math.round(data.main.temp_max)
+      });
+
+      setfahrenheitTemps({
+        currentTempFahrenheit: convertToFahrenheit(data.main.temp),
+        lowTempFahrenheit: convertToFahrenheit(data.main.temp_min),
+        highTempFahrenheit: convertToFahrenheit(data.main.temp_max)
+      });
+    }
+
+    fetchWeatherData();
+  }
+
+  function error(errorResponse: GeolocationPositionError) {
     console.error(errorResponse);
-    // do something on the front end to let the user know it didn't work
   }
 
   return (
     <>
-      <h1>How's the Weather in {city}?</h1>
-      <div className="card">
-
-      </div>
+      <h1>How's the Weather in {weatherData.city}?</h1>
+      <button type="button" onClick={getWeatherData}>Get My Local Weather Data</button>
+      <h2>{weatherData.city}, {weatherData.country}</h2>
+      <div>Current Conditions: {weatherData.currentConditions}</div>
+      <h3>Celsius</h3>
+      <div>Current Temperature: {weatherData.currentTempCelsius ? weatherData.currentTempCelsius : ''}</div>
+      <div>Today's High: {weatherData.highTempCelsius ? weatherData.highTempCelsius : ''}</div>
+      <div>Today's Low: {weatherData.lowTempCelsius ? weatherData.lowTempCelsius : ''}</div>
+      <h3>Fahrenheit</h3>
+      <div>Current Temperature: {fahrenheitTemps.currentTempFahrenheit ? fahrenheitTemps.currentTempFahrenheit : ''}</div>
+      <div>Today's High: {fahrenheitTemps.highTempFahrenheit ? fahrenheitTemps.highTempFahrenheit : ''}</div>
+      <div>Today's Low: {fahrenheitTemps.lowTempFahrenheit ? fahrenheitTemps.lowTempFahrenheit : ''}</div>
     </>
   )
 }
