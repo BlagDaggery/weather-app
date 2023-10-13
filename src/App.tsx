@@ -43,8 +43,8 @@ function App() {
       const response = await fetch(endpoint);
       const data = await response.json();
       
-      const responseLongitude: number = data.coord.lon.toFixed(2);
-      const responseLatitude: number = data.coord.lat.toFixed(2);
+      const responseLongitude: number = +data.coord.lon.toFixed(2);
+      const responseLatitude: number = +data.coord.lat.toFixed(2);
 
       try {
         if (longitudeRounded !== responseLongitude || latitudeRounded !== responseLatitude) {
