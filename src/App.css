@@ -4,3 +4,16 @@
   padding: 2rem;
   text-align: center;
 }
+
+.hidden {
+  display: none;
+}
+
+.error-msg {
+  background-color: #FDAFAF;
+  border-radius: 8px;
+  padding: .25rem 0.5rem;
+  margin: 1rem auto;
+  border: 1px solid #FF0000;
+  max-width: 80%;
+}
