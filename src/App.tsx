@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
 
 function App() {
   const [weatherData, setWeatherData] = useState({
@@ -48,7 +48,7 @@ function App() {
 
       try {
         if (longitudeRounded !== responseLongitude || latitudeRounded !== responseLatitude) {
-          throw new Error('The returned coordinates from the API were not the same coordinates provided by the user agent.')
+          throw new Error('The returned coordinates from the API were not the same coordinates provided by the user agent.');
         }
 
         setWeatherData({
@@ -95,7 +95,7 @@ function App() {
       <div>Today's High: {fahrenheitTemps.highTempFahrenheit ? fahrenheitTemps.highTempFahrenheit : ''}</div>
       <div>Today's Low: {fahrenheitTemps.lowTempFahrenheit ? fahrenheitTemps.lowTempFahrenheit : ''}</div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
