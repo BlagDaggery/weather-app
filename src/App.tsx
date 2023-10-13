@@ -17,39 +17,59 @@ function App() {
     highTempFahrenheit: convertToFahrenheit(weatherData.highTempCelsius)
   });
 
-  const api: string = 'https://fcc-weather-api.glitch.me/api/current';
+  const [hiddenClass, setHiddenClass] = useState('hidden');
 
-  function getWeatherData() {
-    navigator.geolocation.getCurrentPosition(success, error);
-  }
+  const api: string = 'https://fcc-weather-api.glitch.me/api/current';
 
   function convertToFahrenheit(temperature: number) {
     return temperature ? Math.round(temperature * 9 / 5 + 32) : NaN;
   }
 
+  function getWeatherData() {
+    setHiddenClass('hidden');
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+
   function success(positionData: GeolocationPosition) {
-    const longitude = positionData.coords.longitude;
-    const latitude = positionData.coords.latitude;
+    const longitude: number = positionData.coords.longitude;
+    const longitudeRounded: number = +positionData.coords.longitude.toFixed(2);
+    
+    const latitude: number = positionData.coords.latitude;
+    const latitudeRounded: number = +positionData.coords.latitude.toFixed(2);
+
     const endpoint: string = `${api}?lat=${latitude}&lon=${longitude}`;
 
     async function fetchWeatherData() {
       const response = await fetch(endpoint);
       const data = await response.json();
       
-      setWeatherData({
-        city: data.name,
-        country: data.sys.country,
-        currentConditions: data.weather[0].main,
-        currentTempCelsius: Math.round(data.main.temp),
-        lowTempCelsius: Math.round(data.main.temp_min),
-        highTempCelsius: Math.round(data.main.temp_max)
-      });
+      const responseLongitude: number = data.coord.lon.toFixed(2);
+      const responseLatitude: number = data.coord.lat.toFixed(2);
 
-      setfahrenheitTemps({
-        currentTempFahrenheit: convertToFahrenheit(data.main.temp),
-        lowTempFahrenheit: convertToFahrenheit(data.main.temp_min),
-        highTempFahrenheit: convertToFahrenheit(data.main.temp_max)
-      });
+      try {
+        if (longitudeRounded !== responseLongitude || latitudeRounded !== responseLatitude) {
+          throw new Error('The returned coordinates from the API were not the same coordinates provided by the user agent.')
+        }
+
+        setWeatherData({
+          city: data.name,
+          country: data.sys.country,
+          currentConditions: data.weather[0].main,
+          currentTempCelsius: Math.round(data.main.temp),
+          lowTempCelsius: Math.round(data.main.temp_min),
+          highTempCelsius: Math.round(data.main.temp_max)
+        });
+  
+        setfahrenheitTemps({
+          currentTempFahrenheit: convertToFahrenheit(data.main.temp),
+          lowTempFahrenheit: convertToFahrenheit(data.main.temp_min),
+          highTempFahrenheit: convertToFahrenheit(data.main.temp_max)
+        });
+        
+      } catch (error) {
+        console.error(error);
+        setHiddenClass('');
+      }
     }
 
     fetchWeatherData();
@@ -63,6 +83,7 @@ function App() {
     <>
       <h1>How's the Weather in {weatherData.city}?</h1>
       <button type="button" onClick={getWeatherData}>Get My Local Weather Data</button>
+      <div className={`error-msg ${hiddenClass}`}>Looks like something went wrong. Wait a few seconds and try again.</div>
       <h2>{weatherData.city}, {weatherData.country}</h2>
       <div>Current Conditions: {weatherData.currentConditions}</div>
       <h3>Celsius</h3>
