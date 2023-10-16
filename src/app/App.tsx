@@ -1,29 +1,25 @@
 import { useState } from 'react';
+import Temperature from '../temperature/temperature';
 import './App.css';
 
+
 function App() {
+
   const [weatherData, setWeatherData] = useState({
     city: 'Your City',
     country: 'Your Country',
-    currentConditions: '',
+    currentConditions: ''
+  });
+
+  const [temperatureData, setTemperatureData] = useState({
     currentTempCelsius: NaN,
     lowTempCelsius: NaN,
     highTempCelsius: NaN
   });
 
-  const [fahrenheitTemps, setfahrenheitTemps] = useState({
-    currentTempFahrenheit: convertToFahrenheit(weatherData.currentTempCelsius),
-    lowTempFahrenheit: convertToFahrenheit(weatherData.lowTempCelsius),
-    highTempFahrenheit: convertToFahrenheit(weatherData.highTempCelsius)
-  });
-
   const [hiddenClass, setHiddenClass] = useState('hidden');
 
   const api: string = 'https://fcc-weather-api.glitch.me/api/current';
-
-  function convertToFahrenheit(temperature: number) {
-    return temperature ? Math.round(temperature * 9 / 5 + 32) : NaN;
-  }
 
   function getWeatherData() {
     setHiddenClass('hidden');
@@ -54,16 +50,13 @@ function App() {
         setWeatherData({
           city: data.name,
           country: data.sys.country,
-          currentConditions: data.weather[0].main,
+          currentConditions: data.weather[0].main
+        });
+  
+        setTemperatureData({
           currentTempCelsius: Math.round(data.main.temp),
           lowTempCelsius: Math.round(data.main.temp_min),
           highTempCelsius: Math.round(data.main.temp_max)
-        });
-  
-        setfahrenheitTemps({
-          currentTempFahrenheit: convertToFahrenheit(data.main.temp),
-          lowTempFahrenheit: convertToFahrenheit(data.main.temp_min),
-          highTempFahrenheit: convertToFahrenheit(data.main.temp_max)
         });
         
       } catch (error) {
@@ -86,14 +79,10 @@ function App() {
       <div className={`error-msg ${hiddenClass}`}>Looks like something went wrong. Wait a few seconds and try again.</div>
       <h2>{weatherData.city}, {weatherData.country}</h2>
       <div>Current Conditions: {weatherData.currentConditions}</div>
-      <h3>Celsius</h3>
-      <div>Current Temperature: {weatherData.currentTempCelsius ? weatherData.currentTempCelsius : ''}</div>
-      <div>Today's High: {weatherData.highTempCelsius ? weatherData.highTempCelsius : ''}</div>
-      <div>Today's Low: {weatherData.lowTempCelsius ? weatherData.lowTempCelsius : ''}</div>
-      <h3>Fahrenheit</h3>
-      <div>Current Temperature: {fahrenheitTemps.currentTempFahrenheit ? fahrenheitTemps.currentTempFahrenheit : ''}</div>
-      <div>Today's High: {fahrenheitTemps.highTempFahrenheit ? fahrenheitTemps.highTempFahrenheit : ''}</div>
-      <div>Today's Low: {fahrenheitTemps.lowTempFahrenheit ? fahrenheitTemps.lowTempFahrenheit : ''}</div>
+      <Temperature
+        currentTempCelsius={temperatureData.currentTempCelsius}
+        lowTempCelsius={temperatureData.lowTempCelsius}
+        highTempCelsius={temperatureData.highTempCelsius} />
     </>
   );
 }
